@@ -17,7 +17,8 @@ Benewake TF01 lidar driver.
 
 #### 2.1.1 Published Topics
 
-/ir_height ([sensor_msgs/Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html) )
+/ir_height ([sensor_msgs/Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html))
+    
     Output distance information. 
 
 #### 2.1.2 Parameters
