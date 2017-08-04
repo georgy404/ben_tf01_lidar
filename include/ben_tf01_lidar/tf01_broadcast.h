@@ -1,3 +1,14 @@
+/**
+*  tf01_broadcast.h
+*
+*  This file is part of ben_tf01_lidar.
+*  File contains class for reading data from lidar and provide ROS interface.
+*  This ROS node designed for Benewake TF01 LIDAR (http://www.benewake.com/TF01_e.html)
+*
+*  Copyright (c) 2017 Konovalov Georgy <konovalov.g.404@gmail.com>
+**/
+
+
 #ifndef __TF01_BROADCAST_H__
 #define __TF01_BROADCAST_H__
 

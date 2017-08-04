@@ -1,5 +1,15 @@
+/**
+*  tf01_broadcast.cpp
+*
+*  This file is part of ben_tf01_lidar.
+*  File contains class for reading data from lidar and provide ROS interface.
+*  This ROS node designed for Benewake TF01 LIDAR (http://www.benewake.com/TF01_e.html)
+*
+*  Copyright (c) 2017 Konovalov Georgy <konovalov.g.404@gmail.com>
+**/
+
+
 #include "ben_tf01_lidar/tf01_broadcast.h"
-#include <iostream>
 
 Tf01Broadcast::Tf01Broadcast(ros::NodeHandle *nh)
 {
@@ -9,14 +19,16 @@ Tf01Broadcast::Tf01Broadcast(ros::NodeHandle *nh)
 
   // get params data and check it
   std::string dev_port;
-  if (!nh_->getParam("/port", dev_port))
+  if (!nh_->getParam("/ben_tf01_lidar_node/port", dev_port))
     failureExit("Port is not set! Please set port as rosparam \"port\".");
-  if (!nh_->getParam("/frame", frame_id_))
+  if (!nh_->getParam("/ben_tf01_lidar_node/frame", frame_id_))
     failureExit("Frame id is not set! Please set frame id as rosparam \"frame\".");
 
   // init serial port
-  if(!serial_open(dev_port.c_str(), 9600))
+  if(!serial_open(dev_port.c_str(), 115200))
     failureExit("Doesn't open port. Check rosparam \"port\" or device port.");
+  else
+    ROS_INFO("Port successfully opened.");
 }
 
 Tf01Broadcast::~Tf01Broadcast()
@@ -35,8 +47,7 @@ void Tf01Broadcast::workLoop()
   uint8_t read_buf[read_buf_len_];
 
   // read data from port
-  int ret = serial_receive(read_buf, read_buf_len_);
-  std::cout << "ret = " << ret << std::endl;
+  serial_receive(read_buf, read_buf_len_);
 
   // find msgs from lidar in received buffer
   int16_t i = 0;
@@ -51,7 +62,7 @@ void Tf01Broadcast::workLoop()
     {
       // copy bytes for one msg
       uint8_t msg[msg_bytes_count_];
-      memcpy(msg, (read_buf), msg_bytes_count_);
+      memcpy(msg, &read_buf[i], msg_bytes_count_);
 
       // check msg and get distance
       if (calcChecksum(msg))
@@ -114,7 +125,7 @@ bool Tf01Broadcast::calcChecksum(uint8_t *buf)
   checksum += (header_*2);
   index += 2;
   // get sum from 3 to 8 bytes
-  while (index < 8)
+  for(index; index < 8; index++)
     checksum += buf[index];
 
   // return result of compare chechsum and checksum byte

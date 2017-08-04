@@ -1,6 +1,8 @@
+<?xml version="1.0"?>
+
 <launch>
-  <node pkg="ben_tf01_lidar" type="ben_tf01_lidar_node" name="ben_tf01_lidar_node">
-    <param name="/ben_tf01_lidar_node/port" value="/dev/pts/4" />
-    <param name="/ben_tf01_lidar_node/frame" value="world" />
+  <node pkg="ben_tf01_lidar" type="ben_tf01_lidar_node" name="ben_tf01_lidar_node" respawn="false" output="screen" clear_params="true">
+    <param name="port" value="/dev/pts/5" type="str" />
+    <param name="frame" value="world" type="str" />
   </node>
 </launch>
