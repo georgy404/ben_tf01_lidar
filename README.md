@@ -17,17 +17,11 @@ Benewake TF01 lidar driver.
 
 #### 2.1.1 Published Topics
 
-/ir_height ([sensor_msgs/Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html))
-    
-    Output distance information. 
+/ir_height ([sensor_msgs/Range](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)) - output distance information
 
 #### 2.1.2 Parameters
 
-~port (str) 
+~port (str) - port to which lidar is connected (example: /dev/ttyUSB0)
     
-    port to which lidar is connected (example: /dev/ttyUSB0)
-    
-~frame (str) 
-
-    [TF](http://wiki.ros.org/tf)  frame for lidar relative to which will measured length
+~frame (str) - [TF](http://wiki.ros.org/tf) frame for lidar relative to which will measured length
 
