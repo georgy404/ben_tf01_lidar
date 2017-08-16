@@ -43,7 +43,7 @@ private:
 
   // Lidar protocol variables
   const int16_t msg_bytes_count_ = 9; // one msg from lidar has lenght 9 byte
-  const int16_t read_buf_len_ = 20; // lenght of read buffer
+  const int16_t read_buf_len_ = 32; // lenght of read buffer
   const int8_t header_ = 0x59; // header byte
 
 private:

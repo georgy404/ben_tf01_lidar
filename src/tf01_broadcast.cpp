@@ -43,40 +43,56 @@ Tf01Broadcast::~Tf01Broadcast()
 // Read data from serial port and send result to ROS topic
 void Tf01Broadcast::workLoop()
 {
-  // init read buf
+  // init read buffer
   uint8_t read_buf[read_buf_len_];
 
-  // read data from port
-  serial_receive(read_buf, read_buf_len_);
+  // read data from port and fill buffer
+  int cur_len = 0;
+  int count = 0;
+  while (read_buf_len_ - count > cur_len)
+  {
+    cur_len = serial_receive(&read_buf[i], (read_buf_len_ - count));
+    count += cur_len;
+  }
 
   // find msgs from lidar in received buffer
   int16_t i = 0;
-  while(i < read_buf_len_)
+  while(i < count)
   {
     // check buffer end
-    if(read_buf_len_ - i < msg_bytes_count_)
+    if(count - i < msg_bytes_count_)
       break;
 
     // if find start of msg
     if (isMsgBegin(read_buf, i))
     {
+      std::cout << "begin\n";
+
       // copy bytes for one msg
       uint8_t msg[msg_bytes_count_];
-      memcpy(msg, &read_buf[i], msg_bytes_count_);
+      for(int j = 0; j < msg_bytes_count_; j++)
+        msg[j] = read_buf[i+j];
+
+      // debug output
+      for(int j = 0; j < msg_bytes_count_; j++)
+        printf("%d = %.2X | ", j, msg[j]);
+      printf("\n");
 
       // check msg and get distance
-      if (calcChecksum(msg))
-      {
+      //if (calcChecksum(msg))
+      //{
+        std::cout << "calcChecksum() res = " << calcChecksum(msg) << std::endl;
         // get distance from msg and send to ROS
         float dist = getDistanceFromMsg(msg);
         sendDistance2Ros(dist);
-      }
+      //}
     }
 
-    // shift index on message size
-    i += msg_bytes_count_;
+    // shift index
+    i++;
   }
 }
+
 
 // ----------------------------------------------------------------------------
 // --- External program interfaces functions
@@ -112,29 +128,26 @@ void Tf01Broadcast::failureExit(const char *err_msg)
 bool Tf01Broadcast::isMsgBegin(uint8_t *buf, int16_t byte_num)
 {
   // return true if two first bytes is header bytes
-  return (buf[byte_num] == header_ && buf[byte_num++] == header_);
+  return (buf[byte_num] == header_ && buf[byte_num+1] == header_);
 }
 
 // Calculate checksum and return result of comare with chechsum msg byte
 bool Tf01Broadcast::calcChecksum(uint8_t *buf)
 {
   uint8_t checksum = 0x0;
-  int index = 0;
+  for(int i = 0; i < (msg_bytes_count_-1); i++)
+    checksum += buf[i];
 
-  // add to chechsum two first header bytes
-  checksum += (header_*2);
-  index += 2;
-  // get sum from 3 to 8 bytes
-  for(index; index < 8; index++)
-    checksum += buf[index];
+  printf("check = %.2X\n", (checksum & 0xff));
 
   // return result of compare chechsum and checksum byte
-  return (buf[index] == (checksum & 0xff));
+  return (buf[msg_bytes_count_-1] == (checksum & 0xff));
 }
 
 // Parse msg and return distance in meters
 float Tf01Broadcast::getDistanceFromMsg(uint8_t *msg)
 {
-  return (msg[2] + (msg[3] * 256)) / 100.0;
+  return float(msg[2] + (msg[3] * 256));
 }
+
 
