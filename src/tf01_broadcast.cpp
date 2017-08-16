@@ -48,10 +48,10 @@ void Tf01Broadcast::workLoop()
 
   // read data from port and fill buffer
   int cur_len = 0;
-  int count = 0;
+  int count = 1;
   while (read_buf_len_ - count > cur_len)
   {
-    cur_len = serial_receive(&read_buf[i], (read_buf_len_ - count));
+    cur_len = serial_receive(&read_buf[count], (read_buf_len_ - count));
     count += cur_len;
   }
 
