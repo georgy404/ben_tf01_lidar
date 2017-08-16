@@ -51,7 +51,7 @@ void Tf01Broadcast::workLoop()
   int count = 1;
   while (read_buf_len_ - count > cur_len)
   {
-    cur_len = serial_receive(&read_buf[count], (read_buf_len_ - count));
+    cur_len = serial_receive(&read_buf[count-1], (read_buf_len_ - count));
     count += cur_len;
   }
 
